@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <title>날씨 예보 캘린더</title>
+    <style>
+        header {
+            background-color: #003399;
+            color: #ffffff;
+            padding: 20px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.26);
+            width: 450px;
+            margin: 0 auto;
+            float: center;
+            /* 중앙 정렬을 위해 margin을 추가합니다. */
+        }
+
+        .weather-box,
+        .schedule-box {
+            order: 2;
+        }
+
+        #schedule-box {
+            margin-top: 10px;
+            /* 원하는 여백을 설정하세요 */
+        }
+
+        footer {
+            background-color: #003399;
+            color: #ffffff;
+            padding: 20px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.26);
+            width: 450px;
+            margin: 0 auto;
+            float: center;
+            /* 중앙 정렬을 위해 margin을 추가합니다. */
+        }
+
+        footer h3 {
+            text-align: center;
+        }
+
+        header h1 {
+            text-align: center;
+        }
+
+        section {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 50vh;
+            /* 화면 전체 높이를 섹션의 높이로 설정하려면 추가합니다. */
+        }
+
+        #calendar,
+        #weather-box,
+        #schedule-box {
+            margin: 10px;
+            /* 필요한 여백을 설정합니다. */
+        }
+
+
+        /* 버튼 스타일 */
+
+        body {
+            float: center;
+        }
+
+        button {
+            margin: 5px;
+            padding: 1em;
+            border: 1px solid black;
+            background-color: #fff;
+            color: #333;
+            font-size: 16px;
+            cursor: pointer;
+        }
+
+        /* 선택된 날짜 스타일 */
+        button.selected {
+            background-color: #007bff !important;
+            color: #fff;
+        }
+
+        /* 날씨 박스 스타일 */
+        .weather-box {
+            display: none;
+            position: absolute;
+            top: 0;
+            right: 210px;
+            width: 200px;
+            padding: 10px;
+            background-color: #fff;
+            color: #333;
+            border: 1px solid #000;
+            border-radius: 5px;
+        }
+
+        /* 일정 입력창 스타일 */
+        .schedule-box {
+            display: none;
+            position: absolute;
+            top: 210px;
+            right: 210px;
+            width: 200px;
+            padding: 10px;
+            background-color: #fff;
+            color: #333;
+            border: 1px solid #000;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <h1>달력</h1>
+    </header>
+    <section>
+        <div id="calendar"></div>
+        <div id="weather-box" class="weather-box"></div>
+        <div id="schedule-box" class="schedule-box">
+            <textarea id="schedule-input" rows="2"></textarea>
+            <button id="save-schedule-btn">저장</button>
+        </div>
+    </section>
+    <footer>
+       <h3>날짜를 눌러 날씨를 확인하고 일정을 입력해보세요.</h3>
+    </footer>
+
+
+
+    
+
+    <script>
+        /* 달력 UI를 동적으로 생성하는 코드 */
+        function createCalendar(year, month) {
+            const calendar = document.getElementById("calendar");
+            const date = new Date(year, month - 1, 1);
+            const daysInMonth = new Date(year, month, 0).getDate();
+            const firstDayOfWeek = date.getDay();
+
+            const monthName = date.toLocaleString("ko-KR", { month: "long" });
+            const yearString = date.getFullYear();
+            const header = `<h2>${monthName} ${yearString}</h2>`;
+            let table = `<table><thead><tr><th>일</th><th>월</th><th>화</th><th>수</th><th>목</th><th>금</th><th>토</th></tr></thead><tbody>`;
+            let dayOfMonth = 1;
+            for (let i = 0; i < 6; i++) {
+                table += "<tr>";
+                for (let j = 0; j < 7; j++) {
+                    if (i === 0 && j < firstDayOfWeek) {
+                        table += "<td></td>";
+                    } else if (dayOfMonth > daysInMonth) {
+                        table += "<td></td>";
+                    } else {
+                        const button = document.createElement("button");
+                        button.textContent = dayOfMonth;
+                        button.addEventListener("click", () => {
+                            const selectedButton = document.querySelector(".selected");
+                            if (selectedButton) {
+                                selectedButton.classList.remove("selected");
+                            }
+                            button.classList.add("selected");
+                            showWeatherData(year, month, dayOfMonth);
+                            showScheduleInput();
+                        });
+
+                        button.addEventListener("dblclick", () => {
+                            if (button.classList.contains("selected")) {
+                                button.classList.remove("selected");
+                            } else {
+                                button.classList.add("selected");
+                            }
+                        });
+                        table += `<td>${button.outerHTML
+                            }</td>`;
+                        dayOfMonth++;
+                    }
+                }
+                table += "</tr>";
+            }
+            table += "</tbody></table>";
+            calendar.innerHTML = header + table;
+        }
+
+        /* 현재 날짜를 기준으로 달력을 생성하는 코드 */
+        const today = new Date();
+        const currentYear = today.getFullYear();
+        const currentMonth = today.getMonth() + 1;
+        createCalendar(currentYear, currentMonth);
+
+        /* 날씨 데이터를 가져오는 함수 */
+        function fetchWeatherData(year, month, day) {
+            // 기상청 API를 통해 날씨 데이터를 가져오는 로직을 구현해야 합니다.
+            // 이 부분은 실제로 사용하실 API와 연동하여 구현하셔야 합니다.
+            // 여기에서는 가상의 데이터를 사용하겠습니다.
+            return new Promise((resolve) => { // 가상의 데이터
+                const weatherData = {
+                    temperature: "25°C",
+                    conditions: "맑음"
+                };
+                resolve(weatherData);
+            });
+        }
+        let isDoubleClick = false; // 더블 클릭 여부를 저장하는 변수
+        let selectedButton = null; // 선택된 버튼을 저장하는 변수
+
+        function onButtonClick(event) {
+            const dayButton = event.target;
+
+            // 이전에 선택된 버튼이 있을 경우
+            if (selectedButton) { // 선택한 날짜와 현재 클릭한 날짜가 같으면 더블 클릭으로 판단
+                if (selectedButton === dayButton) {
+                    isDoubleClick = true;
+                } else { // 다른 날짜를 클릭한 경우 이전에 선택한 버튼의 스타일 초기화
+                    selectedButton.classList.remove("selected");
+                    isDoubleClick = false;
+                }
+            }
+
+            // 현재 클릭한 날짜를 선택한 버튼으로 변경
+            selectedButton = dayButton;
+
+            // 더블 클릭한 경우
+            if (isDoubleClick) { // 선택한 날짜의 색상 변경
+                if (selectedButton.style.backgroundColor === "#add8e6") {
+                    selectedButton.style.backgroundColor = "white";
+                } else {
+                    selectedButton.style.backgroundColor = "#add8e6";
+                } isDoubleClick = false; // 더블 클릭 여부 초기화
+            } else {
+                // 더블 클릭하지 않은 경우
+                // 기존 로직 수행: 날씨 데이터 표시, 일정 입력창 표시 등
+                const year = currentYear;
+                const month = currentMonth;
+                const day = parseInt(dayButton.textContent);
+                showWeatherData(year, month, day);
+                showScheduleInput();
+            }
+        }
+
+        const buttons = document.querySelectorAll("#calendar button");
+        buttons.forEach((button) => {
+            button.addEventListener("click", onButtonClick);
+        });
+
+
+        /* 날씨 데이터를 보여주는 함수 */
+        function showWeatherData(year, month, day) {
+            const weatherBox = document.getElementById("weather-box");
+            fetchWeatherData(year, month, day).then((weatherData) => {
+                const { temperature, conditions } = weatherData;
+                weatherBox.innerHTML = `<p>날짜: ${year}-${month}-${day}</p><p>기온: ${temperature}</p><p>날씨: ${conditions}</p>`;
+                weatherBox.style.display = "block";
+            });
+        }
+        /* 일정 입력창을 보여주는 함수 */
+        function showScheduleInput() {
+            const scheduleBox = document.getElementById("schedule-box");
+            scheduleBox.style.display = "block";
+        }
+        /* Save 버튼을 클릭했을 때 일정을 저장하는 함수 */
+        function saveSchedule() {
+            const scheduleInput = document.getElementById("schedule-input");
+            const schedule = scheduleInput.value;
+            if (schedule.trim() !== "") {
+                alert(`일정이 저장되었습니다: ${schedule}`);
+                scheduleInput.value = "";
+            } else {
+                alert("일정을 입력해주세요.");
+            }
+        }
+
+        const saveScheduleButton = document.getElementById("save-schedule-btn");
+        saveScheduleButton.addEventListener("click", saveSchedule);
+    </script>
+</body>
+
+</html>
