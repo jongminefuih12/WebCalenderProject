@@ -1,1 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>날씨예보 캘린더</title>
+</head>
+<style>
+    header {
+            background-color: #809FFF;
+            color: #ffffff;
+            padding: 20px;
+            width: 450px;
+            text-shadow: 2px 3px 1px rgb(0, 0, 0);
+        }
+        
+    button {
+        width:50px;
+         height:50px;
+         margin: 5px;
+        }
 
+        
+    footer {
+            background-color: #809FFF;
+            color: #ffffff;
+            padding: 20px;
+            width: 450px;
+            text-shadow: 2px 2px 1px black;
+        }
+
+        header {
+            text-align: center;
+        }
+
+        footer {
+            text-align: center;
+        }
+</style>
+<body>
+    <header><h1>달력</h1></header>
+   <h2><br>&nbsp;&nbsp;&nbsp;2023년 6월</br></h2>
+   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b>일</b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b>월</b>
+   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b>화</b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+   <b>수</b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b>목</b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+   <b>금</b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b>토</b>
+    
+   <div class="row">
+    &nbsp;&nbsp;&nbsp; <button id ="28"><small>28</small></button>
+    <button id ="29"><small>29</small></button>
+    <button id ="30"><small>30</small></button>
+    <button id ="31"><small>31</small></button>
+    <button id ="1"><b>1</b></button>
+    <button id ="2"><b>2</b></button>
+    <button id ="3"><b>3</b></button>
+   </div>
+
+   <div class="row">
+    &nbsp;&nbsp;&nbsp;&nbsp;<button id ="4"><b>4</b></button>
+    <button id ="5"><b>5</b></button>
+    <button id ="6"><b>6</b></button>
+    <button id ="7"><b>7</b></button>
+    <button id ="8"><b>8</b></button>
+    <button id ="9"><b>9</b></button>
+    <button id ="10"><b>10</b></button>
+   </div>
+
+   <div class="row">
+    &nbsp;&nbsp;&nbsp; <button id ="11"><b>11</b></button>
+    <button id ="12"><b>12</b></button>
+    <button id ="13"><b>13</b></button>
+    <button id ="14"><b>14</b></button>
+    <button id ="15"><b>15</b></button>
+    <button id ="16"><b>16</b></button>
+    <button id ="17"><b>17</b></button>
+   </div>
+
+   <div class="row">
+    &nbsp;&nbsp;&nbsp;&nbsp;<button id ="18"><b>18</b></button>
+    <button id ="19"><b>19</b></button>
+    <button id ="20"><b>20</b></button>
+    <button id ="21"><b>21</b></button>
+    <button id ="22"><b>22</b></button>
+    <button id ="23"><b>23</b></button>
+    <button id ="24"><b>24</b></button>
+   </div>
+
+   <div class="row">
+    &nbsp;&nbsp;&nbsp; <button id ="25"><b>25</b></button>
+    <button id ="26"><b>26</b></button>
+    <button id ="27"><b>27</b></button>
+    <button id ="28"><b>28</b></button>
+    <button id ="29"><b>29</b></button>
+    <button id ="30"><b>30</b></button>
+    <button id ="1"><small>31</small></button>
+   </div>
+
+   <footer>날짜를 눌러 날씨를 확인하고 일정을 입력해보세요.</footer>
+</body>
+</html>
