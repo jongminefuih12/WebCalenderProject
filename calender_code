@@ -1,0 +1,477 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+    <meta charset="UTF-8">
+    <title>날씨 예보 캘린더</title>
+    <style>
+      header {
+        background-color: #003399;
+        color: #ffffff;
+        padding: 20px;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.26);
+        width: 450px;
+        margin: 0 auto;
+      }
+
+      footer {
+        background-color: #003399;
+        color: #ffffff;
+        padding: 20px;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.26);
+        width: 450px;
+        margin: 0 auto;
+      }
+
+      footer h3 {
+        text-align: center;
+      }
+
+      header h1 {
+        text-align: center;
+      }
+
+      section {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        height: 50vh;
+      }
+
+      button {
+        margin: 6px;
+        padding: 10px;
+        border: 2px solid #000;
+        border-radius: 5px;
+        background-color: #fff;
+        color: #000;
+        font-size: 16px;
+        cursor: pointer;
+      }
+
+      .weather-box {
+        display: none;
+        position: absolute;
+        top: 120px;
+        right: 402px;
+        width: 250px;
+        padding: 15px;
+        background-color: #fff;
+        color: #000;
+        border: 2px solid #000;
+        border-radius: 5px;
+      }
+
+      .schedule-display {
+        display: none;
+        position: absolute;
+        top: 350px;
+        right: 402px;
+        width: 250px;
+        padding: 15px;
+        background-color: #fff;
+        color: #000;
+        border: 2px solid #000;
+        border-radius: 5px;
+      }
+
+      .schedule-box {
+        display: none;
+        position: absolute;
+        top: 350px;
+        right: 150px;
+        width: 200px;
+        padding: 10px;
+        background-color: #fff;
+        border: 2px solid #000;
+        border-radius: 5px;
+      }
+
+      .delete-btn-box {
+        display: none;
+        position: absolute;
+        top: 284px;
+        right: 402px;
+        width: 105px;
+        padding: 1px;
+        background-color: #fff;
+        border: 2px solid #000;
+        border-radius: 4px;
+      }
+
+    </style>
+  </head>
+
+  <body>
+    <header>
+      <h1>달력</h1>
+    </header>
+    <section>
+      <div id="calendar"></div>
+      <div id="weather-box" class="weather-box"></div>
+      <div id="delete-btn-box" class="delete-btn-box">
+        <button id="delete-schedule-btn" class="delete-schedule-btn">일정 삭제</button>
+      </div>
+      <div id="schedule-display" class="schedule-display"></div>
+      <div id="schedule-box" class="schedule-box">
+    </section>
+    <footer>
+      <h3>날짜를 눌러 날씨를 확인하고 일정을 입력해보세요.</h3>
+    </footer>
+    <script>
+      function createCalendar(year, month) {
+        const calendar = document.getElementById("calendar");
+        const date = new Date(year, month - 1, 1);
+        const daysInMonth = new Date(year, month, 0).getDate();
+        const firstDayOfWeek = date.getDay();
+        const monthName = date.toLocaleString("ko-KR", {
+          month: "long"
+        });
+        const yearString = date.getFullYear();
+        const header = `<h2>${monthName} ${yearString}</h2>`;
+        let table = `<table><thead><tr><th>일</th><th>월</th><th>화</th><th>수</th><th>목</th><th>금</th><th>토</th></tr></thead><tbody>`;
+        let dayOfMonth = 1;
+        for (let i = 0; i < 6; i++) {
+          table += "<tr>";
+          for (let j = 0; j < 7; j++) {
+            if (i === 0 && j < firstDayOfWeek) {
+              table += "<td></td>";
+            } else if (dayOfMonth > daysInMonth) {
+              table += "<td></td>";
+            } else {
+              const button = document.createElement("button");
+              button.textContent = dayOfMonth;
+              button.addEventListener("click", () => {
+                const selectedButton = document.querySelector(".selected");
+                if (selectedButton) {
+                  selectedButton.classList.remove("selected");
+                }
+                button.classList.add("selected");
+                showWeatherData(year, month, dayOfMonth);
+                showScheduleInput();
+              });
+              button.addEventListener("dblclick", () => {
+                if (button.classList.contains("selected")) {
+                  button.classList.remove("selected");
+                } else {
+                  button.classList.add("selected");
+                }
+              });
+              table += `<td>${button.outerHTML
+                            }</td>`;
+              dayOfMonth++;
+            }
+          }
+          table += "</tr>";
+        }
+        table += "</tbody></table>";
+        calendar.innerHTML = header + table;
+      }
+      
+      const today = new Date();
+      const currentYear = today.getFullYear();
+      const currentMonth = today.getMonth() + 1;
+      const currentDay = today.getDate();
+      createCalendar(currentYear, currentMonth);
+
+      let hour_v = "0600";
+      let hour_v_0_3 = "0200"
+
+      let multip = 12;
+
+      let date_today =
+        String(currentYear) +
+        String("0" + (today.getMonth() + 1)).slice(-2) +
+        String("0" + (today.getDate())).slice(-2);
+      let mn_date_today =
+        String(currentYear) +
+        String("0" + (today.getMonth() + 1)).slice(-2) +
+        String("0" + (today.getDate() - 1)).slice(-2);
+
+      console.log(date_today);
+      let total_time = date_today + hour_v;
+
+      function fetchWeatherData(year, month, day) {
+        let now_time =
+          String(currentYear) +
+          String("0" + today.getHours()).slice(-2) +
+          String("0" + today.getMinutes()).slice(-2);
+
+        if (Number(currentYear + hour_v) >= Number(now_time)) {
+          date_today = mn_date_today;
+        }
+
+        console.log(mn_date_today)
+        
+        const apiKey =
+          "xe72vJuhVE9vUY%2FC9BRyhwQFCpnADEN9TML1c7R%2B3M%2BKRZSnmQ10NY%2FYrNd0GVz3vPn9qytkfl2tq1GkadeUug%3D%3D";
+
+        const apiURL_3_10_temp = `http://apis.data.go.kr/1360000/MidFcstInfoService/getMidTa?serviceKey=${apiKey}&numOfRows=10&pageNo=1&regId=11B10101&tmFc=${date_today}${hour_v}`
+        const apiURL_3_10 = `https://apis.data.go.kr/1360000/MidFcstInfoService/getMidLandFcst?serviceKey=${apiKey}&pageNo=1&numOfRows=10&dataType=XML&regId=11B00000&tmFc=${date_today}${hour_v}`;
+        const apiURL_0_3 = `http://apis.data.go.kr/1360000/VilageFcstInfoService_2.0/getVilageFcst?serviceKey=${apiKey}&numOfRows=1000&pageNo=1&base_date=${mn_date_today}&base_time=${hour_v_0_3}&nx=55&ny=127`;
+
+        console.log(selectedButton.innerText);
+
+        let day_temp = Math.abs(currentDay - selectedButton.innerText);
+        console.log(day_temp);
+
+        let temperature_api1;
+        let temperature_api2;
+        let temperature_api = [];
+        let weather_api;
+
+
+        if (day_temp <= 2) {
+          return new Promise((resolve, reject) => {
+            fetch(apiURL_0_3)
+              .then((response) => response.text())
+              .then((data) => {
+                if (day_temp == 2) {
+                  const weatherData = {
+                    temperature1: "2일차 전후는 조회불가",
+                    temperature2: "2일차 전후는 조회불가",
+                    conditions: "2일차 전후는 조회불가",
+                  };
+                  resolve(weatherData);
+                } else {
+                  const parser = new DOMParser();
+                  const xmlDoc = parser.parseFromString(data, "text/xml");
+                  console.log(xmlDoc.getElementsByTagName("fcstValue")[(selectedButton.innerText - currentDay + 1) * 290 + 138].textContent);
+
+                  if (xmlDoc.getElementsByTagName("fcstValue")[(selectedButton.innerText - currentDay + 1) * 290 + 138].textContent == 1) {
+                    weather_api = "맑음";
+                  }
+                  if (xmlDoc.getElementsByTagName("fcstValue")[(selectedButton.innerText - currentDay + 1) * 290 + 138].textContent == 3) {
+                    weather_api = "구름많음";
+                  }
+                  if (xmlDoc.getElementsByTagName("fcstValue")[(selectedButton.innerText - currentDay + 1) * 290 + 138].textContent == 4) {
+                    weather_api = "흐림";
+                  }
+
+                  console.log(`${selectedButton.innerText} 데이터`, weather_api);
+
+                  temperature_api1 = xmlDoc.getElementsByTagName("fcstValue")[(selectedButton.innerText - currentDay + 1) * 290 + 48].textContent;
+                  temperature_api2 = xmlDoc.getElementsByTagName("fcstValue")[(selectedButton.innerText - currentDay + 1) * 290 + 157].textContent;
+
+                  const weatherData = {
+                    temperature1: temperature_api1,
+                    temperature2: temperature_api2,
+                    conditions: weather_api,
+                  };
+                  resolve(weatherData);
+                }
+              })
+              .catch((error) => {
+                console.log("데이터를 가져오는 도중 오류가 발생했습니다:", error);
+              });
+          });
+        } else if (day_temp > 2) {
+
+          const promise1 = fetch(apiURL_3_10_temp)
+            .then((response) => response.text())
+            .then((data) => {
+              const parser = new DOMParser();
+              const xmlDoc = parser.parseFromString(data, "text/xml");
+              if (day_temp <= 10 && day_temp >= 3) {
+                let day_min = `taMin${day_temp}`;
+                let day_max = `taMax${day_temp}`;
+                temperature_api1 = xmlDoc.getElementsByTagName(day_min)[0].textContent;
+                temperature_api2 = xmlDoc.getElementsByTagName(day_max)[0].textContent;
+                console.log(temperature_api1);
+                console.log(temperature_api2);
+                console.log(weather_api);
+              } else {
+                weather_api = "정보 없음";
+              }
+              temperature_api[0] = temperature_api1;
+              temperature_api[1] = temperature_api2;
+
+              return temperature_api;
+            })
+            .catch((error) => {
+              if (hour_v == "0600") {
+                console.log("set_time");
+                hour_v = "1800";
+              } else {
+                console.log("데이터를 가져오는 도중 오류가 발생했습니다", error);
+              }
+              return fetchWeatherData(year, month, day);
+            });
+
+          const promise2 = fetch(apiURL_3_10)
+            .then((response) => response.text())
+            .then((data) => {
+              const parser = new DOMParser();
+              const xmlDoc = parser.parseFromString(data, "text/xml");
+              if (day_temp <= 10 && day_temp >= 3) {
+                let day_wf = `wf${day_temp}`;
+                if (day_temp <= 7) {
+                  day_wf = day_wf + "Pm";
+                }
+                console.log(xmlDoc);
+                weather_api = xmlDoc.getElementsByTagName(day_wf)[0].textContent;
+                console.log(weather_api);
+              } else {
+                weather_api = "정보 없음";
+              }
+              console.log(`${selectedButton.innerText} 데이터`, weather_api);
+              return weather_api;
+            })
+            .catch((error) => {
+              if (hour_v == "0600") {
+                console.log("set_time");
+                hour_v = "1800";
+              } else {
+                console.log("데이터를 가져오는 도중 오류가 발생했습니다", error);
+              }
+              return fetchWeatherData(year, month, day);
+            });
+          return Promise.all([promise1, promise2])
+            .then(([temperature_api, weather_api]) => {
+
+              const weatherData = {
+                temperature1: temperature_api[0],
+                temperature2: temperature_api[1],
+                conditions: weather_api,
+              };
+              return weatherData;
+
+            })
+            .catch((error) => {
+              console.log("데이터를 가져오는 도중 오류가 발생했습니다", error);
+            });
+        }
+      }
+
+
+      let selectedButton = null;
+
+      function onButtonClick(event) {
+        const dayButton = event.target;
+
+        if (selectedButton === dayButton) {
+          if (dayButton.style.backgroundColor === "#add8e6") {
+            dayButton.style.backgroundColor = "white";
+          } else {
+            dayButton.style.backgroundColor = "#add8e6";
+          }
+        } else {
+          if (selectedButton) {
+            selectedButton.style.backgroundColor = "white";
+          }
+          dayButton.style.backgroundColor = "#add8e6";
+        }
+        selectedButton = dayButton;
+
+        const year = currentYear;
+        const month = currentMonth;
+        const day = parseInt(dayButton.textContent);
+        showWeatherData(year, month, day);
+        showScheduleInput();
+        showDeleteButton();
+        callBackSchedule(day);
+      }
+
+      const buttons = document.querySelectorAll("#calendar button");
+      buttons.forEach((button) => {
+        button.addEventListener("dblclick", onButtonClick);
+      });
+      function showWeatherData(year, month, day) {
+        const weatherBox = document.getElementById("weather-box");
+        fetchWeatherData(year, month, day).then((weatherData) => {
+          const {
+            temperature1,
+            temperature2,
+            conditions,
+            calendar
+          } = weatherData;
+          weatherBox.innerHTML = `<p>날짜: ${year}-${month}-${day}</p><p>최저기온: ${temperature1}</p><p>최고기온: ${temperature2}</p><p>날씨: ${conditions}</p>`;
+          weatherBox.style.display = "block";
+        });
+      }
+      function showScheduleInput() {
+        const scheduleBox = document.getElementById("schedule-box");
+        const day = selectedButton.textContent;
+        scheduleBox.innerHTML = `<p>----일정을 입력하세요----</p><input id="schedule-input" type="text" /><button id="save-schedule-btn" onclick="saveSchedule()">저장</button>`;
+        scheduleBox.style.display = "block";
+      }
+      function showDeleteButton() {
+        const deleteBox = document.getElementById("delete-btn-box");
+        deleteBox.style.display = "block";
+      }
+      let schedules = [];
+      function callBackSchedule(day) {
+        const scheduleDisplay = document.getElementById("schedule-display");
+        let scheduleHTML = `<p>----${day}일 일정----</p>`;
+        const daySchedules = schedules[day];
+        if (daySchedules && daySchedules.length > 0) {
+          for (const schedule of daySchedules) {
+            scheduleHTML += `<p>${schedule}</p>`;
+          }
+        } else {
+          scheduleHTML += "<p>일정이 없습니다.</p>";
+        }
+        scheduleDisplay.innerHTML = scheduleHTML;
+        scheduleDisplay.style.display = "block";
+      }
+      function showScheduleDisplay() {
+        const scheduleDisplay = document.getElementById("schedule-display");
+        const day = selectedButton.textContent;
+        let scheduleHTML = `<p>---${day}일 일정---</p>`;
+        if (schedules.length === 0) {
+          scheduleHTML += "<p>일정이 없습니다.</p>";
+        } else {
+          for (let i = 0; i < schedules.length; i++) {
+            scheduleHTML += `<p>${schedules[i]
+                        }</p>`;
+          }
+        }
+        scheduleDisplay.innerHTML = scheduleHTML;
+        scheduleDisplay.style.display = "block";
+      }
+      function saveSchedule() {
+        const scheduleInput = document.getElementById("schedule-input");
+        const schedule = scheduleInput.value;
+
+        if (schedule.trim() !== "") {
+          const day = selectedButton.textContent;
+          if (!schedules[day]) {
+            schedules[day] = [];
+          }
+          schedules[day].push(schedule);
+          alert(`일정이 저장되었습니다: ${schedule}`);
+          callBackSchedule(day);
+          scheduleInput.value = "";
+        } else {
+          alert("일정을 입력해주세요.");
+        }
+      }
+      
+      function deleteSchedule() {
+        const scheduleDisplay = document.getElementById("schedule-display");
+        const day = selectedButton.textContent;
+        const daySchedules = schedules[day];
+
+        if (daySchedules && daySchedules.length > 0) {
+          daySchedules.pop();
+          if (daySchedules.length > 0) {
+            scheduleDisplay.innerHTML = `<p>---${day}일 일정---</p>`;
+            for (const schedule of daySchedules) {
+              scheduleDisplay.innerHTML += '<p>' + schedule + '</p>';
+            }
+          } else {
+            scheduleDisplay.innerHTML = `<p>---${day}일 일정---</p><p>일정이 없습니다.</p>`;
+          }
+          alert("일정이 삭제되었습니다.");
+        } else {
+          alert("삭제할 일정이 없습니다.");
+        }
+      }
+      const deleteScheduleButton = document.getElementById("delete-schedule-btn");
+      deleteScheduleButton.addEventListener("click", deleteSchedule);
+
+    </script>
+  </body>
+
+</html>
