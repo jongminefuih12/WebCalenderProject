@@ -12,7 +12,6 @@
             box-shadow: 0 2px 5px rgba(0, 0, 0, 0.26);
             width: 450px;
             margin: 0 auto;
-            float: center;
         }
 
         footer {
@@ -22,7 +21,6 @@
             box-shadow: 0 2px 5px rgba(0, 0, 0, 0.26);
             width: 450px;
             margin: 0 auto;
-            float: center;
         }
 
         footer h3 {
@@ -41,23 +39,15 @@
             height: 50vh;
         }
 
-        body {
-            float: center;
-        }
-
         button {
-            margin: 5px;
-            padding: 1em;
-            border: 1px solid black;
+            margin: 6px;
+            padding: 10px;
+            border: 2px solid #000;
+            border-radius: 5px;
             background-color: #fff;
-            color: #333;
+            color: #000;
             font-size: 16px;
             cursor: pointer;
-        }
-
-        button.selected {
-            background-color: #007bff !important;
-            color: #fff;
         }
 
         .weather-box {
@@ -76,7 +66,7 @@
         .schedule-display {
             display: none;
             position: absolute;
-            top: 410px;
+            top: 350px;
             right: 402px;
             width: 250px;
             padding: 15px;
@@ -98,11 +88,16 @@
             border-radius: 5px;
         }
 
-        .delete-schedule-btn {
+        .delete-btn-box {
+            display: none;
             position: absolute;
-            top: 325px;
+            top: 284px;
             right: 402px;
-            margin-top: 10px;
+            width: 105px;
+            padding: 1px;
+            background-color: #fff;
+            border: 2px solid #000;
+            border-radius: 4px;
         }
     </style>
 </head>
@@ -114,25 +109,22 @@
     <section>
         <div id="calendar"></div>
         <div id="weather-box" class="weather-box"></div>
-        <button id="delete-schedule-btn" class="delete-schedule-btn">일정 삭제</button>
-        <div id="schedule-display" class="schedule-display">
-            <p>---일정---</p>
+        <div id="delete-btn-box" class="delete-btn-box">
+            <button id="delete-schedule-btn" class="delete-schedule-btn">일정 삭제</button>
         </div>
+        <div id="schedule-display" class="schedule-display"></div>
         <div id="schedule-box" class="schedule-box">
-            <textarea id="schedule-input" rows="2"></textarea>
-            <button id="save-schedule-btn">저장</button>
     </section>
     <footer>
         <h3>날짜를 눌러 날씨를 확인하고 일정을 입력해보세요.</h3>
     </footer>
     <script>
-        /* 달력 UI를 동적으로 생성하는 코드 */
+        /* 달력 UI를 생성하는 코드 */
         function createCalendar(year, month) {
             const calendar = document.getElementById("calendar");
             const date = new Date(year, month - 1, 1);
             const daysInMonth = new Date(year, month, 0).getDate();
             const firstDayOfWeek = date.getDay();
-
             const monthName = date.toLocaleString("ko-KR", { month: "long" });
             const yearString = date.getFullYear();
             const header = `<h2>${monthName} ${yearString}</h2>`;
@@ -157,7 +149,6 @@
                             showWeatherData(year, month, dayOfMonth);
                             showScheduleInput();
                         });
-
                         button.addEventListener("dblclick", () => {
                             if (button.classList.contains("selected")) {
                                 button.classList.remove("selected");
@@ -175,35 +166,30 @@
             table += "</tbody></table>";
             calendar.innerHTML = header + table;
         }
-
         /* 현재 날짜를 기준으로 달력을 생성하는 코드 */
         const today = new Date();
         const currentYear = today.getFullYear();
         const currentMonth = today.getMonth() + 1;
         const currentDay = today.getDate();
-
         createCalendar(currentYear, currentMonth);
-
 
         //api제공하는 데이터 갱신시간 18:00 or 06:00
         let hour_v = "0600";
+        let hour_v_0_3 = "0200"
+
+        let multip = 12;
 
         //YYYYMMDD형식에 맞게 이전날짜 받아옴
         let date_today =
             String(currentYear) +
             String("0" + (today.getMonth() + 1)).slice(-2) +
             String("0" + (today.getDate())).slice(-2);
-        let date_today_mn2 =
-            String(currentYear) +
-            String("0" + (today.getMonth() + 1)).slice(-2) +
-            String("0" + (today.getDate() - 2)).slice(-2);
         let mn_date_today =
             String(currentYear) +
             String("0" + (today.getMonth() + 1)).slice(-2) +
             String("0" + (today.getDate() - 1)).slice(-2);
 
-
-        console.log(date_today); //날짜정보 확인
+        console.log(date_today); //첫실행 날짜정보 확인
         let total_time = date_today + hour_v; //현재날짜 + 0600 or 1800
 
         /* 날씨 데이터를 가져오는 함수 */
@@ -213,75 +199,138 @@
                 String("0" + today.getHours()).slice(-2) +
                 String("0" + today.getMinutes()).slice(-2);
 
-
-            if (Number(hour_v) >= Number(now_time)) {
-                date_today = mn_date_today
+            if (Number(currentYear + hour_v) >= Number(now_time)) {
+                date_today = mn_date_today;
             }
+
+            console.log(mn_date_today)
             //api키 공공데이터 포털 개인 api
             const apiKey =
-                "KyJNs40k%2Fln8eiXN%2BC5O9HqHEHP4ztm27cvcEL7nkcLie4do1RlE9KHS6S6yUbR8UnYzK6wK6HZpmWqBcGyIjQ%3D%3D";
+                "xe72vJuhVE9vUY%2FC9BRyhwQFCpnADEN9TML1c7R%2B3M%2BKRZSnmQ10NY%2FYrNd0GVz3vPn9qytkfl2tq1GkadeUug%3D%3D";
 
-            console.log(total_time);
-            console.log(hour_v);
+
             //api 대상 주소
+            //_3_10 3일~10일 날씨
+            //_3_10_temp 3일~10일 기온
+            //_0_3 0일~3일 날씨
+            //_0_3 0일~3일 기온
+            const apiURL_3_10_temp = `http://apis.data.go.kr/1360000/MidFcstInfoService/getMidTa?serviceKey=${apiKey}&numOfRows=10&pageNo=1&regId=11B10101&tmFc=${date_today}${hour_v}`
             const apiURL_3_10 = `https://apis.data.go.kr/1360000/MidFcstInfoService/getMidLandFcst?serviceKey=${apiKey}&pageNo=1&numOfRows=10&dataType=XML&regId=11B00000&tmFc=${date_today}${hour_v}`;
-            const apiURL_0_3 = `http://apis.data.go.kr/1360000/VilageFcstMsgService/getLandFcst?serviceKey=${apiKey}&numOfRows=10&pageNo=1&regId=11A00101&announceTime=${date_today}${hour_v}`
+            const apiURL_0_3 = `http://apis.data.go.kr/1360000/VilageFcstInfoService_2.0/getVilageFcst?serviceKey=${apiKey}&numOfRows=1000&pageNo=1&base_date=${mn_date_today}&base_time=${hour_v_0_3}&nx=55&ny=127`;
             //fetch 함수를 통해 원격 api호출
 
-            // 필요한 날짜 값 확보
-            console.log(selectedButton.innerText);
+            console.log(selectedButton.innerText); //눌린 날짜 확인
 
             // 제공되는 데이터는 최대 10일이기때문에 현재 - 선택 의 절대값이 10인지를 확인하고 처리
             let day_temp = Math.abs(currentDay - selectedButton.innerText);
-            console.log(day_temp);
+            console.log(day_temp); //선택날짜로 부터 일수 차이 확인
+
+            let temperature_api1;
+            let temperature_api2;
+            let temperature_api = [];
+            let weather_api;
+
 
             if (day_temp <= 2) {
-                //당일에서 3일
-                return fetch(apiURL_0_3)
-                    //응답을 보고 텍스트로 반환
+                return new Promise((resolve, reject) => {
+                    //당일에서 3일 날씨 기온
+                    fetch(apiURL_0_3)
+                        //응답을 보고 텍스트로 반환
+                        .then((response) => response.text())
+                        .then((data) => {
+                            if (day_temp == 2) {
+                                const weatherData = {
+                                    temperature1: "2일차 전후는 조회불가",
+                                    temperature2: "2일차 전후는 조회불가",
+                                    conditions: "2일차 전후는 조회불가",
+                                };
+                                resolve(weatherData);
+                            }
+                            else {
+                                // XML 데이터 파싱
+                                const parser = new DOMParser();
+                                const xmlDoc = parser.parseFromString(data, "text/xml");
+                                //139 429 719 (290) -1
+                                console.log(xmlDoc.getElementsByTagName("fcstValue")[(selectedButton.innerText - currentDay + 1) * 290 + 138].textContent);
+
+                                //태그로 찾기x category태그에 데이터형식으로 분류가 되어있기때문에 위치로 찾아야 됨
+                                if (xmlDoc.getElementsByTagName("fcstValue")[(selectedButton.innerText - currentDay + 1) * 290 + 138].textContent == 1) {
+                                    weather_api = "맑음";
+                                }
+                                if (xmlDoc.getElementsByTagName("fcstValue")[(selectedButton.innerText - currentDay + 1) * 290 + 138].textContent == 3) {
+                                    weather_api = "구름많음";
+                                }
+                                if (xmlDoc.getElementsByTagName("fcstValue")[(selectedButton.innerText - currentDay + 1) * 290 + 138].textContent == 4) {
+                                    weather_api = "흐림";
+                                }
+
+                                // 값 콘솔로 출력
+                                console.log(`${selectedButton.innerText} 데이터`, weather_api);
+
+                                //49 339 629 (290) -1
+                                //158 448 738 (290) -1
+                                temperature_api1 = xmlDoc.getElementsByTagName("fcstValue")[(selectedButton.innerText - currentDay + 1) * 290 + 48].textContent; //tmn
+                                temperature_api2 = xmlDoc.getElementsByTagName("fcstValue")[(selectedButton.innerText - currentDay + 1) * 290 + 157].textContent; //tmx
+
+                                const weatherData = {
+                                    temperature1: temperature_api1,
+                                    temperature2: temperature_api2,
+                                    conditions: weather_api,
+                                };
+                                resolve(weatherData);
+                            }
+                        })
+                        //에러상황 처리
+                        .catch((error) => {
+                            console.log("데이터를 가져오는 도중 오류가 발생했습니다:", error);
+                        });
+                });
+            }
+
+            else if (day_temp > 2) {
+
+                //3일에서 10일 기온
+                const promise1 = fetch(apiURL_3_10_temp)
                     .then((response) => response.text())
-                    //응답 데이터중 필요한부분 선별
                     .then((data) => {
                         // XML 데이터 파싱
                         const parser = new DOMParser();
                         const xmlDoc = parser.parseFromString(data, "text/xml");
-                        console.log(Math.abs(currentDay - selectedButton.innerText - 2) * 2);
-                        //if (xmlDoc.getElementsByTagName(numEf)[day_temp] == day_temp) {
-                        weather_api = xmlDoc.getElementsByTagName("wf")[Math.abs(currentDay - selectedButton.innerText - 2) * 2].textContent;
-                        //}
+                        if (day_temp <= 10 && day_temp >= 3) {
+                            let day_min = `taMin${day_temp}`; //당시 최저기온
+                            let day_max = `taMax${day_temp}`; //당시 최고기온
+                            temperature_api1 = xmlDoc.getElementsByTagName(day_min)[0].textContent;
+                            temperature_api2 = xmlDoc.getElementsByTagName(day_max)[0].textContent;
+                            console.log(temperature_api1);
+                            console.log(temperature_api2);
+                            console.log(weather_api);
+                        }
+                        else {
+                            weather_api = "정보 없음";
+                        }
+                        temperature_api[0] = temperature_api1;
+                        temperature_api[1] = temperature_api2;
 
-                        // 값 콘솔로 출력
-                        console.log(`${selectedButton.innerText} 데이터`, weather_api);
-
-                        const weatherData = {
-                            temperature: "25°C",
-                            conditions: weather_api,
-                        };
-                        return weatherData;
+                        return temperature_api;
                     })
                     .catch((error) => {
-                        //앞에서 언급했듯 갱신시간이 18:00 06:00 두가지 이므로 24시간이내 데이터를 사용하기 위해 조건문 사용
                         if (hour_v == "0600") {
                             console.log("set_time");
                             hour_v = "1800";
                         }
                         else {
-                            console.log("데이터를 가져오는 도중 오류가 발생했습니다:", error);
+                            console.log("데이터를 가져오는 도중 오류가 발생했습니다", error);
                         }
                         return fetchWeatherData(year, month, day);
                     });
-            }
-            else if (day_temp > 2) {
-                //3일에서 10일
-                return fetch(apiURL_3_10)
-                    //응답을 보고 텍스트로 반환
+
+                //3일에서 10일 날씨
+                const promise2 = fetch(apiURL_3_10)
                     .then((response) => response.text())
-                    //응답 데이터중 필요한부분 선별
                     .then((data) => {
                         // XML 데이터 파싱
                         const parser = new DOMParser();
                         const xmlDoc = parser.parseFromString(data, "text/xml");
-
                         if (day_temp <= 10 && day_temp >= 3) {
                             let day_wf = `wf${day_temp}`;
                             //7일 이내는 am과 pm으로 나누기때문에 pm 추가
@@ -295,128 +344,164 @@
                         else {
                             weather_api = "정보 없음";
                         }
-
                         // 값 콘솔로 출력
                         console.log(`${selectedButton.innerText} 데이터`, weather_api);
-
-                        const weatherData = {
-                            temperature: "25°C",
-                            conditions: weather_api,
-                        };
-                        return weatherData;
+                        return weather_api;
                     })
-                    //에러상황 처리
                     .catch((error) => {
-                        //앞에서 언급했듯 갱신시간이 18:00 06:00 두가지 이므로 24시간이내 데이터를 사용하기 위해 조건문 사용
                         if (hour_v == "0600") {
                             console.log("set_time");
                             hour_v = "1800";
                         }
                         else {
-                            console.log("데이터를 가져오는 도중 오류가 발생했습니다:", error);
+                            console.log("데이터를 가져오는 도중 오류가 발생했습니다", error);
                         }
                         return fetchWeatherData(year, month, day);
                     });
-            }
+                //추출된 데이터를 동시에 반한하기 위함
+                return Promise.all([promise1, promise2])
+                    .then(([temperature_api, weather_api]) => {
 
+                        const weatherData = {
+                            temperature1: temperature_api[0],
+                            temperature2: temperature_api[1],
+                            conditions: weather_api,
+                        };
+                        return weatherData;
+
+                    })
+                    .catch((error) => {
+                        console.log("데이터를 가져오는 도중 오류가 발생했습니다", error);
+                    });
+            }
         }
 
-        let isDoubleClick = false; // 더블 클릭 여부를 저장하는 변수
-        let selectedButton = null; // 선택된 버튼을 저장하는 변수
+
+        let selectedButton = null;
 
         function onButtonClick(event) {
             const dayButton = event.target;
-            // 이전에 선택된 버튼이 있을 경우
-            if (selectedButton) { // 선택한 날짜와 현재 클릭한 날짜가 같으면 더블 클릭으로 판단
-                if (selectedButton === dayButton) {
-                    isDoubleClick = true;
-                } else { // 다른 날짜를 클릭한 경우 이전에 선택한 버튼의 스타일 초기화
-                    selectedButton.style.backgroundColor = "white";
-                    isDoubleClick = false;
-                }
-            }
-            // 현재 클릭한 날짜를 선택한 버튼으로 변경
-            selectedButton = dayButton;
-            // 더블 클릭한 경우
-            if (isDoubleClick) { // 선택한 날짜의 색상 변경
-                if (selectedButton.style.backgroundColor === "#add8e6") {
-                    selectedButton.style.backgroundColor = "white";
+
+            if (selectedButton === dayButton) { // 더블클릭한 경우
+                if (dayButton.style.backgroundColor === "#add8e6") {
+                    dayButton.style.backgroundColor = "white";
                 } else {
-                    selectedButton.style.backgroundColor = "#add8e6";
-                } isDoubleClick = false; // 더블 클릭 여부 초기화
-            } else { // 더블 클릭하지 않은 경우, 기존 기능 실행
-                const year = currentYear;
-                const month = currentMonth;
-                const day = parseInt(dayButton.textContent);
-                showWeatherData(year, month, day);
-                showScheduleInput();
-            }
+                    dayButton.style.backgroundColor = "#add8e6";
+                }
+            } else { // 다른 버튼을 클릭한 경우
+                if (selectedButton) {
+                    selectedButton.style.backgroundColor = "white";
+                }
+                dayButton.style.backgroundColor = "#add8e6";
+            } selectedButton = dayButton;
+
+            const year = currentYear;
+            const month = currentMonth;
+            const day = parseInt(dayButton.textContent);
+            showWeatherData(year, month, day);
+            showScheduleInput();
+            showDeleteButton();
+            callBackSchedule(day);
         }
+
         const buttons = document.querySelectorAll("#calendar button");
         buttons.forEach((button) => {
-            button.addEventListener("click", onButtonClick);
+            button.addEventListener("dblclick", onButtonClick);
         });
-        /* 날씨 데이터를 보여주는 함수 */
+        // 날씨 데이터를 보여주는 함수
         function showWeatherData(year, month, day) {
             const weatherBox = document.getElementById("weather-box");
             fetchWeatherData(year, month, day).then((weatherData) => {
-                const { temperature, conditions, calendar } = weatherData;
-                weatherBox.innerHTML = `<p>날짜: ${year}-${month}-${day}</p><p>기온: ${temperature}</p><p>날씨: ${conditions}</p><p>일정 : ${calendar}</p>`;
+                const { temperature1, temperature2, conditions, calendar } = weatherData;
+                weatherBox.innerHTML = `<p>날짜: ${year}-${month}-${day}</p><p>최저기온: ${temperature1}</p><p>최고기온: ${temperature2}</p><p>날씨: ${conditions}</p>`;
                 weatherBox.style.display = "block";
             });
         }
         // 일정 입력창을 보여주는 함수
         function showScheduleInput() {
             const scheduleBox = document.getElementById("schedule-box");
+            const day = selectedButton.textContent;
+            scheduleBox.innerHTML = `<p>----일정을 입력하세요----</p><input id="schedule-input" type="text" /><button id="save-schedule-btn" onclick="saveSchedule()">저장</button>`;
             scheduleBox.style.display = "block";
         }
+        // 일정 삭제버튼을 보여주는 함수
+        function showDeleteButton() {
+            const deleteBox = document.getElementById("delete-btn-box");
+            deleteBox.style.display = "block";
+        }
+        // 스케줄을 저장할 배열 선언
         let schedules = [];
-        // 일정을 저장할 배열 선언
+        // 날짜에 맞는 배열을 불러오는 함수
+        function callBackSchedule(day) {
+            const scheduleDisplay = document.getElementById("schedule-display");
+            let scheduleHTML = `<p>----${day}일 일정----</p>`;
+            const daySchedules = schedules[day];
+            if (daySchedules && daySchedules.length > 0) {
+                for (const schedule of daySchedules) {
+                    scheduleHTML += `<p>${schedule}</p>`;
+                }
+            } else {
+                scheduleHTML += "<p>일정이 없습니다.</p>";
+            } scheduleDisplay.innerHTML = scheduleHTML;
+            scheduleDisplay.style.display = "block";
+        }
         // 일정 출력창을 보여주는 함수
         function showScheduleDisplay() {
             const scheduleDisplay = document.getElementById("schedule-display");
-            let scheduleHTML = "<p>---일정---</p>";
+            const day = selectedButton.textContent;
+            let scheduleHTML = `<p>---${day}일 일정---</p>`;
             if (schedules.length === 0) {
-                scheduleHTML += "<p>일정이 없습니다.</p>"; // 일정이 비어있으면 "일정이 없습니다." 출력
+                scheduleHTML += "<p>일정이 없습니다.</p>";
             } else {
-                for (let i = 0; i < schedules.length; i++) { // 배열에 일정을 차례대로 추가
+                for (let i = 0; i < schedules.length; i++) {
                     scheduleHTML += `<p>${schedules[i]
                         }</p>`;
                 }
             } scheduleDisplay.innerHTML = scheduleHTML;
             scheduleDisplay.style.display = "block";
         }
-        // 저장 버튼을 클릭했을 때 일정을 저장하는 함수
+        // 일정을 저장하는 함수
         function saveSchedule() {
             const scheduleInput = document.getElementById("schedule-input");
             const schedule = scheduleInput.value;
 
             if (schedule.trim() !== "") {
-                schedules.push(schedule); // 배열에 스케줄 저장하기
+                const day = selectedButton.textContent;
+                if (!schedules[day]) {
+                    schedules[day] = [];
+                }
+                schedules[day].push(schedule);
                 alert(`일정이 저장되었습니다: ${schedule}`);
-                showScheduleDisplay(); // 스케줄 배열 출력하기
+                callBackSchedule(day);
                 scheduleInput.value = "";
             } else {
                 alert("일정을 입력해주세요.");
             }
         }
-        // 삭제 버튼을 클릭했을 때 일정을 삭제하는 함수
+        // 최근에 저장한 일정부터 차례대로 일정을 삭제하는 함수
         function deleteSchedule() {
             const scheduleDisplay = document.getElementById("schedule-display");
+            const day = selectedButton.textContent;
+            const daySchedules = schedules[day];
 
-            if (schedules.length > 0) { // 일정 배열에 데이터가 있다면
-                schedules = []; // 배열 비우기
-                scheduleDisplay.innerHTML = '<p>---일정---</p><p>일정이 없습니다.</p>';
+            if (daySchedules && daySchedules.length > 0) {
+                daySchedules.pop();
+                if (daySchedules.length > 0) {
+                    scheduleDisplay.innerHTML = `<p>---${day}일 일정---</p>`;
+                    for (const schedule of daySchedules) {
+                        scheduleDisplay.innerHTML += '<p>' + schedule + '</p>';
+                    }
+                } else {
+                    scheduleDisplay.innerHTML = `<p>---${day}일 일정---</p><p>일정이 없습니다.</p>`;
+                }
+                alert("일정이 삭제되었습니다.");
             } else {
                 alert("삭제할 일정이 없습니다.");
             }
         }
         const deleteScheduleButton = document.getElementById("delete-schedule-btn");
         deleteScheduleButton.addEventListener("click", deleteSchedule);
-        const saveScheduleButton = document.getElementById("save-schedule-btn");
-        saveScheduleButton.addEventListener("click", saveSchedule);
     </script>
-</body>
 </body>
 
 </html>
