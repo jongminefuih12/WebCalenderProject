@@ -154,53 +154,7 @@
                                         button.classList.add("selected");
                                     }
                                 });
-                                table += `<td>${
-                                    button.outerHTML
-                                }</td>`;
-                                dayOfMonth++;
-                            }
-                        }
-                        table += "</tr>";
-                    }
-                    table += "</tbody></table>";
-                    calendar.innerHTML = header + table;
-                }
-
-                const today = new Date();
-                const currentYear = today.getFullYear();
-                const currentMonth = today.getMonth() + 1;
-                const currentDay = today.getDate();
-                createCalendar(currentYear, currentMonth);
-
-                let hour_v = "0600";
-                let hour_v_0_3 = "0200"
-
-                let multip = 12;
-
-                let date_today = String(currentYear) + String("0" + (
-                    today.getMonth() + 1
-                )).slice(-2) + String("0" + (
-                    today.getDate()
-                )).slice(-2);
-                let mn_date_today = String(currentYear) + String("0" + (
-                    today.getMonth() + 1
-                )).slice(-2) + String("0" + (
-                    today.getDate() - 1
-                )).slice(-2);
-
-                console.log(date_today);
-                let total_time = date_today + hour_v;
-
-                function fetchWeatherData(year, month, day) {
-                    let now_time = String(currentYear) + String("0" + today.getHours()).slice(-2) + String("0" + today.getMinutes()).slice(-2);
-
-                    if (Number(currentYear + hour_v) >= Number(now_time)) {
-                        date_today = mn_date_today;
-                    }
-
-                    console.log(mn_date_today)
-
-                    const apiKey = "KyJNs40k%2Fln8eiXN%2BC5O9HqHEHP4ztm27cvcEL7nkcLie4do1RlE9KHS6S6yUbR8UnYzK6wK6HZpmWqBcGyIjQ%3D%3D";
+                                table 키";
 
                     const apiURL_3_10_temp = `http://apis.data.go.kr/1360000/MidFcstInfoService/getMidTa?serviceKey=${apiKey}&numOfRows=10&pageNo=1&regId=11B10101&tmFc=${date_today}${hour_v}`
                     const apiURL_3_10 = `https://apis.data.go.kr/1360000/MidFcstInfoService/getMidLandFcst?serviceKey=${apiKey}&pageNo=1&numOfRows=10&dataType=XML&regId=11B00000&tmFc=${date_today}${hour_v}`;
